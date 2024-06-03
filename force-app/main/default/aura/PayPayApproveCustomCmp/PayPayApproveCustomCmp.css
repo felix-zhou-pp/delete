@@ -1,0 +1,11 @@
+.THIS .slds-accordion__summary {
+    background: var(--lwc-colorBackground,rgb(243, 242, 242));
+    line-height: var(--lwc-lineHeightButton,1.875rem);
+    border: var(--lwc-borderWidthThin,1px) solid transparent;
+    border-radius: var(--lwc-borderRadiusMedium,0.25rem);
+    padding: 0.3rem;
+}
+
+.THIS .slds-accordion__summary-heading {
+    font-size: var(--lwc-varFontSize8,1rem);
+}

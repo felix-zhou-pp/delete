@@ -1,0 +1,41 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId" access="global" >
+        <aura:attribute name="entityName" type="String" default="" access="global"/>
+        <aura:attribute name="actionApiName" type="String" default="" access="global"/>
+        <aura:attribute name="actionCallButtonLabel" type="String" default="メール送信(カスタム)" access="global"/>
+
+        <aura:attribute name="lstContentDoc" type="List"/>
+        <c:RetrieveContentDocumentIds filesIds="{!v.lstContentDoc}" recordId="{!v.recordId}" />
+
+        <aura:attribute name="showCreateButton" type="Boolean" default="true" />
+        <lightning:quickActionAPI aura:id="quickActionAPI" />
+        
+        <article class="slds-card">
+            <div class="slds-card__header slds-grid">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <aura:if isTrue="{!v.showCreateButton}">
+                        <lightning:button variant="brand" label="{!v.actionCallButtonLabel}" onclick="{!c.createdActivityPanel}"/>
+                        <aura:set attribute="else">
+                            <lightning:button variant="neutral" label="キャンセル" onclick="{!c.closeActivityPanel}"/>
+                        </aura:set>
+                    </aura:if>
+                </header>
+            </div>
+            <footer class="slds-card__footer">
+                {!v.body}
+            </footer>
+        </article>
+
+        <!-- 
+        <aura:if isTrue="{!v.showCreateButton}">
+            <div class="slds-page-header" role="banner">
+                <lightning:button variant="brand" label="メール送信準備" onclick="{!c.createdActivityPanel}"/>
+            </div>
+            <aura:set attribute="else">
+                <div class="slds-page-header" role="banner">
+                    <lightning:button variant="brand" label="とじる" onclick="{!c.closeActivityPanel}"/>
+                </div>
+            </aura:set>
+        </aura:if>
+        -->
+
+    </aura:component>

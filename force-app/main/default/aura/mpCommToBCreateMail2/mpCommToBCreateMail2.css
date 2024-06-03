@@ -1,0 +1,10 @@
+.THIS textarea.mailbody{
+    width:100%;
+    min-height:200px;
+    max-width:100%;
+    height:350px;
+}
+.THIS textarea.mailbody:read-only{
+    font-size:90%;
+	background-color:#fafafa;
+}

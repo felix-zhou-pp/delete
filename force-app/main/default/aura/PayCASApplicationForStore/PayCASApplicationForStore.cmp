@@ -1,0 +1,19 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction" access="global">
+    <aura:attribute name="simpleRecord" type="PayPayStore__c"/>
+    <force:recordData recordId="{!v.recordId}"
+                      fields="Id,Name,PayOrigin_18_Id__c,merchant_id__c,FormCustomerEmail__c,FormStoreName__c"
+                      targetFields="{!v.simpleRecord}"/>
+
+    <div>
+        <aura:if isTrue="{!v.simpleRecord != null}">
+            <c:PayCASApplication objectApiName="PayPayStore__c"
+                                recordId="{!v.recordId}"
+                                entryFormId="{!'K_' + v.simpleRecord.PayOrigin_18_Id__c}"
+                                parentField="PayPayStoreMailLog__c"
+                                mid="{!v.simpleRecord.merchant_id__c}"
+                                mailAddressAuto="{!v.simpleRecord.FormCustomerEmail__c}"
+                                destinationName="{!v.simpleRecord.FormStoreName__c}"/>
+        </aura:if>
+    </div>
+
+</aura:component>

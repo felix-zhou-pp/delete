@@ -1,0 +1,31 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId" >
+    <aura:attribute name="lstContentDoc" type="List"/>
+    <c:RetrieveContentDocumentIds filesIds="{!v.lstContentDoc}" recordId="{!v.recordId}" />
+
+    <article class="slds-card">
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__figure">
+                    <span class="slds-icon_container">
+                            <lightning:icon iconName="standard:file" size="medium"/>
+                    </span>
+                </div>
+                <div class="slds-media__body">
+                    <h2 class="slds-card__header-title">
+                        <span style="font-weight: bold;">添付ファイル ({!v.lstContentDoc.length})</span>
+                    </h2>
+                    <span>～ 参照/ダウンロード ～</span>
+                </div>
+            </header>
+        </div>
+        <footer class="slds-card__footer">
+            <lightning:layout verticalAlign="stretch" multipleRows="true">
+                <aura:iteration items="{!v.lstContentDoc}" var="item">
+                    <lightning:layoutItem padding="around-small">
+                        <lightning:fileCard fileId="{!item.ContentDocument.Id}" description="{!item.ContentDocument.Title}"/>
+                    </lightning:layoutItem>
+                </aura:iteration>
+            </lightning:layout>
+        </footer>
+    </article>
+</aura:component>

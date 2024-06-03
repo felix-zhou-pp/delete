@@ -1,0 +1,169 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName" access="global" >
+    <aura:attribute access="global" type="Object" name="objectFormatParameter" />
+    
+    <aura:attribute access="global" type="Object" name="standardHeaderFields" />
+    <aura:attribute access="global" type="Object" name="standardDetailFields" />
+    <aura:attribute access="global" type="Object" name="thisKindRelationFields" />
+    <aura:attribute access="global" type="Object" name="thisKindMainFields" />
+    <aura:attribute access="global" type="Object[]" name="thisKindAdvancedFunctions" />
+
+    <aura:attribute name="showSpinner" type="Boolean" default="true" />
+    <aura:if isTrue="{!v.showSpinner}">
+        <lightning:spinner variant="brand" size="large" />
+    </aura:if>
+
+    <aura:handler name="init" value="this" action="{!c.init}"/>
+    <aura:registerEvent name="parentModalClose" type="c:HalfModalBaseActionEvent"/>
+
+    <aura:attribute name="accordionActiveSections" type="List" default="['header','mainBody','subBody']" />
+
+    <aura:attribute name="thisComponentType" type="String" default="" />
+    <aura:attribute name="recordId" type="Id"/>
+    <aura:attribute name="recordTypeId" type="Id" default=""/>
+    <aura:attribute name="objectApiName" type="String" default="mpApprove__c"/>
+    <aura:attribute name="parameterKind" type="String" default=""/>
+    <aura:attribute name="createdObjectName" type="String" default=""/> <!-- オブジェクト名追加 -->
+    <lightning:navigation aura:id="navService"/>
+
+    <c:PayPayApproveFunctionsByKindCmp aura:id="PayPayApproveFunctions" parentType="{!v.thisComponentType}" currentKind="{!v.parameterKind}" createdObjectName="{!v.createdObjectName}" />
+    <aura:handler name="inputFieldChange" event="c:ParentChildComponentRelationEvt" action="{!c.handleFieldChange}"/>
+    <aura:handler name="advancedFunctionCallBack" event="c:ParentChildComponentRelationEvt" action="{!c.handleAdvFuncProcEnd}"/>
+
+    <aura:attribute name="userInfoView" type="Object" />
+    <c:HandyUserInfoComponent aura:id="userInfo" additionalFields="Name, Profile.Name, mpMasterId__c" userInfoView="{!v.userInfoView}" />
+
+<!-- <br/>
+=======================================
+<br/> -->
+    <!-- <aura:attribute name="userInfoView" type="Object" />
+    <c:HandyUserInfoComponent aura:id="userInfo" additionalFields="Name, LastLoginDate, LastPasswordChangeDate" userInfoView="{!v.userInfoView}" /> -->
+    <!-- {!v.userInfoView.Name} -->
+
+    <!-- <aura:attribute name="mpapproveView" type="Object" />
+    <c:VariableAnyRecordViewComponent 
+        aura:id="mpapproveViewRecord" 
+        additionalFields="PayPayMerchant__c" 
+        targetRecordView="{!v.mpapproveView}" 
+        targetRecId="a3K9D00000003vEUAQ" 
+    /> -->
+    <!--targetRecId ← 任意のレコードId -->
+    <!-- {!v.inquiryView.Status__c}<br/> -->
+
+<!-- <br/>
+=======================================
+<br/> -->
+
+
+    <lightning:layout multipleRows="true">
+        <lightning:layoutItem size="12" padding="around-small">
+            <lightning:recordEditForm aura:id="customRecordEdit" 
+                objectApiName="{!v.objectApiName}" 
+                recordTypeId="{!v.recordTypeId}"
+                onload="{!c.handleLoad}"
+                onsubmit="{!c.handleSubmit}"
+                onsuccess="{!c.handleSuccess}"
+                onerror="{!c.handleError}">
+                <lightning:messages />
+
+                <div class="slds-page-header slds-page-header_record-home">
+                    <div class="slds-page-header__row">
+                      <div class="slds-page-header__col-title">
+                        <div class="slds-media">
+                          <div class="slds-media__figure">
+                            <span class="slds-icon_container ">
+                              
+                            </span>
+                          </div>
+                          <div class="slds-media__body">
+                            <div class="slds-page-header__name">
+                              <div class="slds-page-header__name-title">
+                                <h1>
+                                  
+                                </h1>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="slds-page-header__col-actions">
+                        <div class="slds-page-header__controls">
+                          <div class="slds-page-header__control">
+                                <aura:iteration items="{!v.thisKindAdvancedFunctions}" var="advFunc">
+                                    <lightning:button variant="brand-outline" name="{!advFunc.functionType}" label="{!advFunc.functionLabel}" value="{!advFunc.functionTargetSection}" onclick="{!c.handleAdvancedFuncPress}" />
+                                </aura:iteration>
+                          </div>
+                          <div class="slds-page-header__control">
+                            <ul class="slds-button-group-list">
+                              <li>
+                                    <lightning:button variant="brand" type="submit" name="save" label="保存" />
+                              </li>
+                              <li>
+                                    <lightning:button variant="brand-outline" name="customCancel" label="キャンセル" onclick="{!c.closeModal}" />
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="slds-page-header__row slds-page-header__row_gutters">
+                      <div class="slds-page-header__col-details">
+                        <ul class="slds-page-header__detail-row">
+                            <lightning:accordion allowMultipleSectionsOpen="true" activeSectionName="{! v.accordionActiveSections }">
+                                <lightning:accordionSection name="header" label="基本情報:">
+                                    <aura:set attribute="body">
+                                        <lightning:layout multipleRows="true">
+
+                                            <c:CustomInputFieldsSection 
+                                                parentType="{!v.thisComponentType}"
+                                                sectionType="standardHeaderFields" 
+                                                renderType="layoutItem"
+                                                objectFormatFields="{!v.standardHeaderFields}" 
+                                            />
+                                            
+                                            <c:CustomInputFieldsSection 
+                                                parentType="{!v.thisComponentType}"
+                                                sectionType="thisKindRelationFields" 
+                                                renderType="layoutItem"
+                                                objectFormatFields="{!v.thisKindRelationFields}" 
+                                            />
+                                            
+                                        </lightning:layout>
+                                    </aura:set>
+                                </lightning:accordionSection>
+                                <lightning:accordionSection name="mainBody" label="{!'内容: '+v.parameterKind}">
+                                    <aura:set attribute="body">
+                                        <lightning:layout multipleRows="true">
+
+                                            <c:CustomInputFieldsSection 
+                                                parentType="{!v.thisComponentType}"
+                                                sectionType="thisKindMainFields" 
+                                                renderType="layoutItem"
+                                                objectFormatFields="{!v.thisKindMainFields}" 
+                                            />
+                                            
+                                        </lightning:layout>
+                                    </aura:set>
+                                </lightning:accordionSection>
+                                <lightning:accordionSection name="subBody" label="詳細:">
+                                    <aura:set attribute="body">
+                                        <lightning:layout multipleRows="true">
+
+                                            <c:CustomInputFieldsSection 
+                                                parentType="{!v.thisComponentType}"
+                                                sectionType="standardDetailFields" 
+                                                renderType="layoutItem"
+                                                objectFormatFields="{!v.standardDetailFields}" 
+                                            />
+
+                                        </lightning:layout>
+                                    </aura:set>
+                                </lightning:accordionSection>
+                            </lightning:accordion>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+            </lightning:recordEditForm>
+        </lightning:layoutItem>
+    </lightning:layout>
+</aura:component>

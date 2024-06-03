@@ -1,0 +1,5 @@
+<design:component>
+    <design:attribute name="entityName" label="対象オブジェクト" description="対象オブジェクト名(Api)を指定" />
+    <design:attribute name="actionApiName" label="アクション名" description="対象オブジェクトのメール送信系アクション名(Api)を指定" />
+    <design:attribute name="actionCallButtonLabel" label="ボタンラベル" description="アクション呼出ボタンのラベルを指定" />
+</design:component>

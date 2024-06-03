@@ -1,0 +1,114 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName" access="global">
+    <force:recordData aura:id="userData"
+                      recordId="{!$SObjectType.CurrentUser.Id}"
+                      targetFields ="{!v.userRecord}"
+                      fields="LastName,UserLastName__c"
+                      mode="VIEW" />
+	
+    <aura:handler name="PayPayCreateMailFinish" event="c:PayPayCreateMailFinish" action="{!c.handleTemplateSelected}"/>
+    <aura:handler name="change" value="{!v.simpleRecord}" action="{!c.doInit}"/>
+
+    <aura:attribute name="folderDeveloperName" type="String" default="" />
+    
+    <aura:attribute name="layoutInfo" type="Map" default="{}"/>
+    <aura:attribute name="layoutList" type="List" default="[]"/>
+    
+    <aura:attribute name="index" type="Integer" default="0"/>
+    
+    <aura:attribute name="subject" type="String" default=""/>
+    <aura:attribute name="body" type="String" default=""/>
+    <aura:attribute name="header" type="String" default=""/>
+    <aura:attribute name="footer" type="String" default=""/>
+
+    <aura:attribute name="simpleRecord" type="mpComm__c" />
+    <force:recordData aura:id="recordData"
+                      recordId="{!v.recordId}"
+                      targetFields ="{!v.simpleRecord}"
+                      fields="Name,toB_SupportEMail__c,toB_SupportEMail__r.InqueryType__c,toB_SupportEMail__r.mpMerchant__r.Name, toB_SupportEMail__r.PayPayMerchantCustomerName__c"
+                      mode="VIEW" />
+
+    <aura:if isTrue="{!v.simpleRecord != null}">
+        <div class="slds-card">
+            <div class="slds-grid slds-gutters slds-m-top_xx-small">
+                <div class="slds-col slds-size_2-of-12 slds-text-align_center">
+                    <aura:if isTrue="{!v.index != 0}">
+                        <lightning:button variant="brand-outline" label="前へ" onclick="{!c.prev}" />
+                    </aura:if>
+                </div>
+                <div class="slds-col slds-size_8-of-12">
+                    <div class="slds-path">
+                        <div class="slds-grid slds-path__track">
+                            <div class="slds-grid slds-path__scroller-container">
+                                <div class="slds-path__scroller">
+                                    <div class="slds-path__scroller_inner">
+                                        <ul class="slds-path__nav" role="listbox" aria-orientation="horizontal">
+                                            <li class="{!'slds-path__item ' + ((v.index == 0)? 'slds-is-current' : 'slds-is-active')}" role="presentation" onclick="{!c.setIndex}" data-index="0">
+                                                <span aria-selected="false" class="slds-path__link" role="option" tabindex="0">
+                                                    <span class="slds-path__title">本文</span>
+                                                </span>
+                                            </li>
+                                            <li class="{!'slds-path__item ' + ((v.index == 0)? 'slds-is-incomplete' : (v.index == 1)? 'slds-is-current' :  'slds-is-active')}" role="presentation" onclick="{!c.setIndex}" data-index="1">
+                                                <span aria-selected="false" class="slds-path__link" role="option" tabindex="0">
+                                                    <span class="slds-path__title">ヘッダー/フッター</span>
+                                                </span>
+                                            </li>
+                                            <li class="{!'slds-path__item ' + ((v.index == 2)? 'slds-is-current' :  'slds-is-incomplete')}" role="presentation" onclick="{!c.setIndex}" data-index="2">
+                                                <span aria-selected="false" class="slds-path__link" role="option" tabindex="0">
+                                                    <span class="slds-path__title">プレビュー</span>
+                                                </span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_2-of-12 slds-text-align_center">
+                    <aura:if isTrue="{!v.index != 2}">
+                        <lightning:button variant="brand" label="次へ" onclick="{!c.next}" />
+                    </aura:if>
+                </div>
+            </div>
+            
+            <div class="slds-carousel">
+                <div class="slds-carousel__stage">
+                    <div class="slds-carousel__panels" style="{!'transform:translateX(-'+ 100*v.index+'%)'}">
+                        <div id="content-id-01" class="slds-carousel__panel" role="tabpanel">
+                            <div class="slds-carousel__content slds-scrollable" style="height:100%;">
+                                <c:PayPayCreateMailComponent recordId="{#v.recordId}"
+                                                             folderDeveloperName="{!v.folderDeveloperName}"/>
+                                <aura:if isTrue="{!v.body != ''}">
+                                    <textarea class="mailbody" readonly="true" style="height:350px;min-width:100%;max-width:100%;">{!v.body}</textarea>
+                                </aura:if>
+                            </div>
+                        </div>
+                        <div id="content-id-02" class="slds-carousel__panel" role="tabpanel">
+                            <div class="slds-carousel__content slds-scrollable" style="height:100%;">
+                                <lightning:combobox class="slds-form-element" label="選択してください"
+                                                    aura:id="mailTemplateLayoutCmp" name="mailTemplateLayoutCmp"
+                                                    placeholder="標準"
+                                                    options="{! v.layoutList }" onchange="{! c.handleLayoutSelected}" style="width:250px;text-align:left;"/>
+                                <div style="min-height:350px;margin-top:10px;">
+                                    <aura:if isTrue="{!v.header != ''}">
+                                        <textarea class="mailbody" readonly="true" style="height:500px;min-width:100%;max-width:100%;">{!v.header}（ここに本文が入ります）{!v.footer}</textarea>
+                                    </aura:if>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="content-id-03" class="slds-carousel__panel" role="tabpanel">
+                            <div class="slds-carousel__content slds-scrollable" style="height:100%;">
+                                <textarea aura:id="mailTemplateBody" class="mailbody" readonly="true" style="height:500px;min-width:100%;max-width:100%;">{!v.header}{!v.body}{!v.footer}</textarea>
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col slds-size_12-of-12">
+                                        <lightning:button aura:id="mailBodyCopyBtn" label="上記文面でメール作成" onclick="{!c.handleComplete}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+</aura:component>
